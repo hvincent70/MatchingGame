@@ -46,6 +46,8 @@ public class Main {
         WebElement playGame = driver.findElement(by);
         playGame.click();
 
+
+
         for(int i = 0; i < 14; i++){
             String[][] gameGrid = Main.getConfig(driver);
 
