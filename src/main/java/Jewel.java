@@ -1,15 +1,9 @@
 import org.openqa.selenium.By;
-import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.apache.commons.lang3.StringUtils;
-import java.util.HashSet;
 
-import java.awt.geom.RectangularShape;
 import java.util.*;
 import java.util.List;
 
@@ -21,13 +15,21 @@ public class Jewel {
     private String color;
     private String text;
 
-    public int getX(){return x;}
+    public int getX() {
+        return x;
+    }
 
-    public int getY(){return y;}
+    public int getY() {
+        return y;
+    }
 
-    public String getColor(){return color;}
+    public String getColor() {
+        return color;
+    }
 
-    public String getText(){return text;}
+    public String getText() {
+        return text;
+    }
 
     public Jewel(int xpos, int ypos, String jcolor, String question) {
         x = xpos;
@@ -55,24 +57,31 @@ public class Jewel {
         //List<WebElement> elements = driver.findElements(By.xpath("//*[starts-with(@id,'col1card')]"));
         List<Jewel> jewels = new ArrayList<Jewel>();
         ArrayList<Integer> cards = new ArrayList<Integer>();
-        NavigableSet<Integer> xvals = new TreeSet<Integer>();
+        ArrayList<ArrayList<Integer>> xandy = new ArrayList<>();
 
-        for(int i = 0; i < 15; i++){
+        for (int i = 0; i < 15; i++) {
             cards.add(i);
         }
-
-        for (Integer card: cards) {
-            WebElement jewel = driver.findElement(By.xpath("//*[@id='col1card" + card + "']"));
-            int xpos = Integer.parseInt(jewel.getCssValue("left").replace("px", ""));
-            int ypos = Integer.parseInt(jewel.getCssValue("top").replace("px", ""));
-            String color = StringUtils.substringBetween(jewel.findElement(By.className("jewelImage"))
-                    .getAttribute("src"), "-", ".");
-            String text = driver.findElement(By.xpath("//*[@id='col1card" + card + "']/div/div/div")).getText();
-            System.out.println(xpos + ", " + ypos + ", " + color + ", " + text);
-        }
-        /*for (int i = 0; i < jewels.size(); i ++){
-            System.out.println(jewels.get(i).getX() + ", " + jewels.get(i).getY() + ", " + jewels.get(i).getColor()
-                    + ", " + jewels.get(i).getText());*/
-        }
     }
+
+
+    public static int[][] getXAndY(ArrayList<Integer> cards, WebDriver driver) {
+        ArrayList<Integer> justx = new ArrayList<Integer>();
+        ArrayList<Integer> justy = new ArrayList<Integer>();
+        for (Integer card : cards) {
+            WebElement jewel = driver.findElement(By.xpath("//*[@id='col1card" + card + "']"));
+            Integer xpos = Integer.valueOf(Integer.parseInt(jewel.getCssValue("left").replace("px", "")));
+            Integer ypos = Integer.valueOf(Integer.parseInt(jewel.getCssValue("top").replace("px", "")));
+            justx.add(xpos);
+            justy.add(ypos);
+        }
+        Collections.sort(justx);
+        Collections.sort(justy);
+        int[] x = justx.stream().mapToInt(Integer::intValue).toArray();
+        int[] y = justx.stream().mapToInt(Integer::intValue).toArray();
+        int[][] xandy = {{x[0], x[5], x[10]}, {y[0], y[3], y[6], y[9], y[12]}};
+        System.out.println(xandy);
+        return (xandy);
+    }
+}
 
