@@ -1,4 +1,5 @@
 import jdk.nashorn.internal.objects.Global;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -9,12 +10,10 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 
@@ -58,22 +57,15 @@ public class Main {
             cards.add(i);
         }
         Boolean ready = false;
-        //WebDriverWait wait = new WebDriverWait(driver, 15);
 
         By by = By.id("menuButtonStartGame");
         wait.until(visibilityOfElementLocated(by));
         WebElement playGame = driver.findElement(by);
         playGame.click();
 
-        int[][] xandy = Jewel.getXAndY(cards, driver);
-        System.out.println(xandy);
-        /*ArrayList[] xyarray = xandy.toArray(new ArrayList[xandy.size()]);
-        Integer[] xinteger = (Integer[]) xyarray[0].toArray(new Integer[xyarray[0].size()]);
-        Integer[] yinteger = (Integer[]) xyarray[1].toArray(new Integer[xyarray[0].size()]);
-        System.out.println(xinteger + ", " + yinteger);
-        int[] y = xandy.get(0).stream().mapToInt(Integer::intValue).toArray();
-        System.out.println("Here are x and y " + x + ", " + y);
-        String[][] gameGrid = Main.getConfig(x, y);*/
+        ArrayList<ArrayList<Integer>> xandy = Jewel.getXAndY(cards, driver);
+        Jewel[][] gameGrid = Main.getConfig(xandy);
+        //int pick = Main.optimumPick(gameGrid);
 
         /*Continuous run, tries for fast score and reset if it gets in trouble*/
         /*while (true) {
@@ -85,7 +77,13 @@ public class Main {
             }
         }*/
     }
+/*
 
+    private static int optimumPick(Jewel[][] gameGrid) {
+
+    }
+
+*/
 
     public static void continuousRun(ArrayList<Integer> cards, int success, int failure, String url) throws InterruptedException {
         Boolean ready = false;
@@ -146,25 +144,26 @@ public class Main {
     }
 
 
-
-    private static String[][] getConfig(int[] col, int[] row) {
-        String[][] gameGrid = new String[3][5];
-        List<WebElement> jewels = driver.findElements(By.xpath("//*[@id='col1']"));
-        System.out.println(col);
-        System.out.println(row);
-
-        for (int x: col){
-            for(int y: row){
-                System.out.println(col[x]);
-                System.out.println(row[y]);
-                WebElement jewel = driver.findElement(By.xpath("//*[@id='col1']/div[contains(@style,'" + col[x] + "')" +
-                        " AND contains(@style,'" + col[y] + "')]"));
-                String id = jewel.getAttribute("id");
-                gameGrid[x][y] = id;
-                }
+    private static Jewel[][] getConfig(ArrayList<ArrayList<Integer>> xandy) {
+        int[] col = {0, 5, 10};
+        int[] row = {0, 3, 6, 9, 12};
+        Jewel[][] gameGrid = new Jewel[5][3];
+        for (int y = 0; y < 5; y++) {
+            for (int x = 0; x < 3; x++) {
+                int findx = xandy.get(0).get(col[x]);
+                int findy = xandy.get(1).get(row[y]);
+                String path = "//*[@id='col1']/div[contains(@style,'" + findx + "px; top: " + findy + "px')]";
+                WebElement jewel = driver.findElement(By.xpath(path));
+                WebElement img = driver.findElement(By.xpath(path + "/img"));
+                String s =  jewel.getAttribute("id");
+                int card = Integer.parseInt(s.substring(s.lastIndexOf("d") + 1));
+                String color = StringUtils.substringBetween(img.getAttribute("src"), "-", ".");
+                gameGrid[y][x] = new Jewel(card, color);
             }
-            System.out.print(gameGrid);
-            return(gameGrid);
         }
+        System.out.println(gameGrid[2][2].getCard() + gameGrid[2][2].getColor());
+        return (gameGrid);
     }
+}
+
 

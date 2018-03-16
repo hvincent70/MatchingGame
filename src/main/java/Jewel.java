@@ -10,32 +10,20 @@ import java.util.List;
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 
 public class Jewel {
-    private int x;
-    private int y;
     private String color;
-    private String text;
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
+    private int card;
 
     public String getColor() {
         return color;
     }
 
-    public String getText() {
-        return text;
+    public int getCard() {
+        return card;
     }
 
-    public Jewel(int xpos, int ypos, String jcolor, String question) {
-        x = xpos;
-        y = ypos;
+    public Jewel(int jcard, String jcolor) {
         color = jcolor;
-        text = question;
+        card = jcard;
     }
 
 
@@ -65,7 +53,8 @@ public class Jewel {
     }
 
 
-    public static int[][] getXAndY(ArrayList<Integer> cards, WebDriver driver) {
+    public static ArrayList<ArrayList<Integer>> getXAndY(ArrayList<Integer> cards, WebDriver driver) {
+        ArrayList<ArrayList<Integer>> xandy = new ArrayList<>();
         ArrayList<Integer> justx = new ArrayList<Integer>();
         ArrayList<Integer> justy = new ArrayList<Integer>();
         for (Integer card : cards) {
@@ -77,10 +66,8 @@ public class Jewel {
         }
         Collections.sort(justx);
         Collections.sort(justy);
-        int[] x = justx.stream().mapToInt(Integer::intValue).toArray();
-        int[] y = justx.stream().mapToInt(Integer::intValue).toArray();
-        int[][] xandy = {{x[0], x[5], x[10]}, {y[0], y[3], y[6], y[9], y[12]}};
-        System.out.println(xandy);
+        xandy.add(justx);
+        xandy.add(justy);
         return (xandy);
     }
 }
