@@ -177,6 +177,16 @@ public class TitleScreen {
         }
     }
 
+    public WebElement getWin() {
+        WebElement win = driver.findElement(By.id("popupWon"));
+        return win;
+    }
+
+    public WebElement getScript() {
+        WebElement script = driver.findElement(By.id("col2"));
+        return script;
+    }
+
 
 /*
     public WebElement getSearchBar() {
