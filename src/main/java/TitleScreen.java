@@ -187,6 +187,14 @@ public class TitleScreen {
         return script;
     }
 
+    public WebElement getQuestionImage(int i) throws InterruptedException {
+        WebElement questionImage = driver.findElement(By.xpath("//*[@id='col1card" + i + "']/img"));
+        wait.until(ExpectedConditions.not(ExpectedConditions.stalenessOf(questionImage)));
+        Thread.sleep(50);
+        wait.until(ExpectedConditions.elementToBeClickable(questionImage));
+        return questionImage;
+    }
+
 
 /*
     public WebElement getSearchBar() {
